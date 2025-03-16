@@ -3,7 +3,7 @@ import os
 import bcrypt
 
 from SCMS.exceptions.exception import *
-from SCMS.src.course import Course, COURSE_FILE, read_from_file_C, save_to_file_C
+from SCMS.src.course import Course, read_from_file_C, save_to_file_C
 from SCMS.src.student import STUDENT_FILENAME
 from SCMS.src.user import User
 from SCMS.src.validator import Validator
@@ -48,31 +48,23 @@ class Teacher(User):
     def login(self, email, password):
         teachers = read_from_files(TEACHER_FILENAME)
         for teacher in teachers:
-            if teacher.email == email:
-                if self.verify_password(password, teacher.password.encode("utf-8")):
-                    password_check = self.verify_password(password, teacher.password.encode("utf-8"))
-                    self.is_logged_in = True
-                    # print(teacher)
-                    print(password_check)
-                    return teacher
-
-
-                else:
-                    self.is_logged_in = False
-                    return "Passwords do not match"
-
+            if teacher.email == email and self.verify_password(password, teacher.password):
+                self.is_logged_in = True
+                return teacher
+        self.is_logged_in = False
         return None
 
     @staticmethod
     def create_course(course_code, course_title):
-        existing_course = read_from_file_C(COURSE_FILE)
+        existing_course = read_from_file_C("courses.txt")
         for course in existing_course:
             if course.course_code == course_code:
                 raise CourseAlreadyRegisteredException("Course already exists")
 
         new_course = Course(course_code, course_title)
         existing_course.append(new_course)
-        save_to_file_C(COURSE_FILE, new_course)
+        save_to_file_C(existing_course, 'courses.txt')
+        # print(new_course)
         return new_course
 
     # def student_enrolled(self):
@@ -85,8 +77,7 @@ class Teacher(User):
 
     @staticmethod
     def verify_password(password, hashed_password):
-        return bcrypt.checkpw(password.encode('utf-8'), hashed_password.decode('utf-8'))
-
+        return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 def save_to_files(teachers, filename="teachers.txt"):
     try:

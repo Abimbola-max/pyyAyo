@@ -1,6 +1,7 @@
 import bcrypt
 
 from SCMS.exceptions.exception import *
+from SCMS.src.course import read_from_file_C
 from SCMS.src.user import User
 from SCMS.src.validator import Validator
 
@@ -8,10 +9,11 @@ STUDENT_FILENAME = "Student.txt"
 
 class Student(User):
 
-    def __init__(self, first_name, last_name, email, password):
+    def __init__(self, first_name="", last_name="", email="", password=""):
         super().__init__(first_name, last_name, email, password)
         self.is_logged_in = False
         self.enrolled_courses = []
+        self.enrolled = False
 
     def get_status(self):
         return self.is_logged_in
@@ -31,20 +33,37 @@ class Student(User):
     def login(self, email, password):
         students = read_from_files(STUDENT_FILENAME)
         for student in students:
-            if student.email == email:
-                if self.verify_password(password, student.password.encode("utf-8")):
-                    self.is_logged_in = True
-                    return student
-                else:
-                    self.is_logged_in = False
-                    return "Passwords do not match"
+            if student.email == email and self.verify_password(password, student.password):
+                self.is_logged_in = True
+                return student
+
+        self.is_logged_in = False
         return None
 
     def enroll_in_course(self, course_code):
-        for course in self.enrolled_courses:
-            if course.course_code != course_code:
+        courses = read_from_file_C("courses.txt")
+
+        if course_code in self.enrolled_courses:
+            raise CourseAlreadyRegisteredException(f"Course code '{course_code}' is already registered.")
+
+        enrolled = False
+        for course in courses:
+            if course.course_code == course_code:
                 self.enrolled_courses.append(course_code)
-        raise CourseAlreadyRegisteredException("Course code is already registered")
+                enrolled = True
+
+        if not enrolled:
+            raise InvalidCourseCodeException(f"Course code '{course_code}' not found.")
+
+    @staticmethod
+    def view_courses():
+        courses = read_from_file_C("courses.txt")
+        return list(courses)
+
+    @staticmethod
+    def available_enrolled_courses():
+        available_enrolled_courses = Student.view_courses()
+        return available_enrolled_courses
 
     @staticmethod
     def encrypt_password(password):

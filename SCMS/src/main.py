@@ -1,7 +1,6 @@
 import sys
 
 from SCMS.exceptions.exception import *
-from SCMS.src import teacher
 from SCMS.src.student import Student
 from SCMS.src.teacher import Teacher
 from SCMS.src.validator import Validator
@@ -103,15 +102,15 @@ class Main:
 
     def login_menu(self):
         print("""
-                                   1 --> Login as a teacher
-                                   2 --> Login as a student
-                                   3 --> Exit
-                               """)
+                   1 --> Login as a teacher
+                   2 --> Login as a student
+                   3 --> Exit
+                   """)
         choice = input("Kindly enter any choice from the above: ")
         if choice == "1":
             self.login_teacher()
-        # elif choice == "2":
-        #     self.login_student()
+        elif choice == "2":
+            self.login_student()
         elif choice == "3":
             self.exit_app()
         else:
@@ -122,9 +121,13 @@ class Main:
             email = input("Enter your email: ")
             password = input("Enter your password: ")
             teacher_login = Teacher()
-            teacher_login.login(email, password)
-            print(f"You have successfully logged in")
-            self.teacher_menu()
+            current_teacher = teacher_login.login(email, password)
+            if current_teacher is not None:
+                print(f"You have successfully logged in")
+                self.teacher_menu()
+            else:
+                print("Invalid email or password")
+                self.login_teacher()
         except InvalidNameLengthException as e:
             print(f"Error {e}")
         except InvalidNameException as e:
@@ -140,7 +143,8 @@ class Main:
             1 -> Add course
             2 -> View number of students registered
             3 -> Grade student
-            4 -> logout
+            4 -> Go back
+            5 -> logout
              """)
             choice = input("Kindly enter any choice from the above: ")
 
@@ -150,27 +154,110 @@ class Main:
             #     self.view_number_of_student_registered()
             # elif choice == '3':
             #     self.grade_student()
+            elif choice == "4":
+                self.login_menu()
             elif choice == '4':
                 print("logging out mf...")
                 self.main_menu()
         except InvalidNameLengthException as e:
             print(f"Error: {e}")
 
+    def login_student(self):
+        try:
+            email = input("Enter your email: ")
+            password = input("Enter your password: ")
+            student_login = Student()
+            current_student = student_login.login(email, password)
+            if current_student is not None:
+                print(f"You have successfully logged in")
+                self.student_menu()
+            else:
+                print("Invalid email or password")
+                self.login_student()
+        except InvalidNameLengthException as e:
+            print(f"Error {e}")
+        except InvalidNameException as e:
+            print(f"Error {e}")
+        except NullException as e:
+            print(f"Error {e}")
+
+    def student_menu(self):
+        print("""
+            1. View Available Courses
+            2. Enroll in Course(s)
+            2. View enrolled Course(s)
+            3. View grades
+            4. Logout
+            """)
+        choice = input("Kindly enter any choice from the above: ")
+        if choice == "1":
+            self.view_courses()
+        elif choice == "2":
+            self.enroll()
+        elif choice == "3":
+            self.view_enrolled_courses()
+        elif choice == "3":
+            self.view_grade()
+        elif choice == "4":
+            self.main_menu()
+        else:
+            self.main_menu()
+
     def create_course(self):
         try:
+            validate_course = Validator()
             course_code = input("Enter course code: ")
+            validate_course.validate_course_code(course_code)
             course_title = input("Enter course title: ")
-            teacher_create = Teacher()
-            teacher_create.create_course(course_code, course_title)
-            print(f"You have created {course_code} successfully.")
+            validate_course.validate_course_title(course_title)
+            course = Teacher.create_course(course_code, course_title)
+            if course is not None:
+                print(f"You have created {course_code} successfully.")
+                self.teacher_menu()
+            else:
+                print("Invalid course")
+                self.create_course()
         except InvalidCourseCodeException as e:
             print(f"Error {e}")
         except InvalidCourseTitleException as e:
             print(f"Error {e}")
+        except CourseAlreadyRegisteredException as e:
+            print(f"Error {e}")
         except NullException as e:
             print(f"Error {e}")
-        finally:
-            self.teacher_menu()
+
+    def enroll(self):
+        try:
+            course_code = input("Enter course code: ")
+            Validator.validate_course_code(course_code)
+            student = Student()
+            enroll = student.enroll_in_course(course_code)
+            if enroll is not None:
+                print(f"You have enrolled in {course_code} successfully.")
+                self.student_menu()
+            else:
+                print("Invalid course")
+                self.student_menu()
+        except InvalidCourseCodeException as e:
+            print(f"Error {e}")
+        except NullException as e:
+            print(f"Error {e}")
+        except CourseAlreadyRegisteredException as e:
+            print(f"Error {e}")
+        except NotFoundException as e:
+            print(f"Error {e}")
+
+    def view_courses(self):
+        try:
+            student = Student()
+            check = student.available_enrolled_courses()
+            if check is not None:
+                print(f"Available courses are: \n{check}")
+                self.student_menu()
+        except InvalidCourseCodeException as e:
+            print(f"Error {e}")
+        except CourseAlreadyRegisteredException as e:
+            print(f"Error {e}")
 
     @staticmethod
     def exit_app():
