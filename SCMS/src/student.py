@@ -2,6 +2,7 @@ import bcrypt
 
 from SCMS.exceptions.exception import *
 from SCMS.src.course import read_from_file_C
+from SCMS.src.enrollment import Enrollment, save_enrollment, load_enrollment
 from SCMS.src.user import User
 from SCMS.src.validator import Validator
 
@@ -13,16 +14,11 @@ class Student(User):
         super().__init__(first_name, last_name, email, password)
         self.is_logged_in = False
         self.enrolled_courses = []
-        self.enrolled = False
 
     def get_status(self):
         return self.is_logged_in
 
     def register(self, first_name, last_name, email, password):
-        validator = Validator()
-        validator.validate_first_name(first_name)
-        validator.validate_last_name(last_name)
-        validator.validate_email(email)
         hashed_password = self.encrypt_password(password)
         try:
             with open(STUDENT_FILENAME, "a") as file:
@@ -42,6 +38,7 @@ class Student(User):
 
     def enroll_in_course(self, course_code):
         courses = read_from_file_C("courses.txt")
+        # enroll = load_enrollment("enroll.txt")
 
         if course_code in self.enrolled_courses:
             raise CourseAlreadyRegisteredException(f"Course code '{course_code}' is already registered.")
@@ -51,9 +48,17 @@ class Student(User):
             if course.course_code == course_code:
                 self.enrolled_courses.append(course_code)
                 enrolled = True
+                print(f"{Student.first_name} has successfully enrolled in course '{course_code}'.")
 
         if not enrolled:
             raise InvalidCourseCodeException(f"Course code '{course_code}' not found.")
+
+    def view_enrolled_courses(self):
+        if self.enrolled_courses:
+            print("enrolled courses:\n")
+            for course in self.enrolled_courses:
+                print(f"{course}")
+        raise NotFoundException("You never enroll my guy.")
 
     @staticmethod
     def view_courses():
@@ -74,6 +79,9 @@ class Student(User):
     @staticmethod
     def verify_password(password, hashed_password):
         return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
+
+    def __repr__(self):
+        return f"{self.first_name},{self.last_name}"
 
 def save_to_files(students, filename="students.txt"):
     try:

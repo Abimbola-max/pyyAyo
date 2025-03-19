@@ -34,7 +34,8 @@ class Main:
         print("""
                         1 --> Register as a teacher
                         2 --> Register as a student
-                        3 --> Exit
+                        3 --> Go Back
+                        4 --> Exit
                     """)
         choice = input("Kindly enter any choice from the above: ")
         if choice == "1":
@@ -42,6 +43,8 @@ class Main:
         elif choice == "2":
             self.register_student()
         elif choice == "3":
+            self.main_menu()
+        elif choice == "4":
             self.exit_app()
         else:
             self.main_menu()
@@ -104,7 +107,8 @@ class Main:
         print("""
                    1 --> Login as a teacher
                    2 --> Login as a student
-                   3 --> Exit
+                   3 --> Go back
+                   4 --> Exit
                    """)
         choice = input("Kindly enter any choice from the above: ")
         if choice == "1":
@@ -112,6 +116,8 @@ class Main:
         elif choice == "2":
             self.login_student()
         elif choice == "3":
+            self.register_menu()
+        elif choice == "4":
             self.exit_app()
         else:
             self.main_menu()
@@ -123,7 +129,7 @@ class Main:
             teacher_login = Teacher()
             current_teacher = teacher_login.login(email, password)
             if current_teacher is not None:
-                print(f"You have successfully logged in")
+                print(f"You have successfully logged in {Teacher.first_name} {Teacher.last_name}2")
                 self.teacher_menu()
             else:
                 print("Invalid email or password")
@@ -169,7 +175,7 @@ class Main:
             student_login = Student()
             current_student = student_login.login(email, password)
             if current_student is not None:
-                print(f"You have successfully logged in")
+                print(f"You have successfully logged in {Student.first_name} {Student.last_name}")
                 self.student_menu()
             else:
                 print("Invalid email or password")
@@ -185,9 +191,9 @@ class Main:
         print("""
             1. View Available Courses
             2. Enroll in Course(s)
-            2. View enrolled Course(s)
-            3. View grades
-            4. Logout
+            3. View enrolled Course(s)
+            4. View grades
+            5. Logout
             """)
         choice = input("Kindly enter any choice from the above: ")
         if choice == "1":
@@ -196,9 +202,9 @@ class Main:
             self.enroll()
         elif choice == "3":
             self.view_enrolled_courses()
-        elif choice == "3":
-            self.view_grade()
         elif choice == "4":
+            self.view_grade()
+        elif choice == "5":
             self.main_menu()
         else:
             self.main_menu()
@@ -250,10 +256,9 @@ class Main:
     def view_courses(self):
         try:
             student = Student()
-            check = student.available_enrolled_courses()
-            if check is not None:
-                print(f"Available courses are: \n{check}")
-                self.student_menu()
+            # student.available_enrolled_courses()
+            print(f"Available courses are: \n{student.available_enrolled_courses()}")
+            self.student_menu()
         except InvalidCourseCodeException as e:
             print(f"Error {e}")
         except CourseAlreadyRegisteredException as e:
@@ -270,7 +275,14 @@ class Main:
         print("Welcome to GROUP 6 SCMS\n")
         print("The next page Displays And Help You With Your Choice ?\n")
 
-
+    def view_enrolled_courses(self):
+        try:
+            student = Student()
+            student.view_enrolled_courses()
+        except NotFoundException as e:
+            print(f"Error {e}")
+        finally:
+            self.student_menu()
 
 
 if __name__ == "__main__":

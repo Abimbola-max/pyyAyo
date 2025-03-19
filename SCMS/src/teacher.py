@@ -16,7 +16,6 @@ class Teacher(User):
         super().__init__(first_name, last_name, email, password)
         self.is_logged_in = False
 
-
     def get_status(self):
         return self.is_logged_in
 
@@ -64,10 +63,9 @@ class Teacher(User):
         new_course = Course(course_code, course_title)
         existing_course.append(new_course)
         save_to_file_C(existing_course, 'courses.txt')
-        # print(new_course)
         return new_course
 
-    # def student_enrolled(self):
+    # def view_student_enrolled_in_a_course(self):
 
     @staticmethod
     def encrypt_password(password):
@@ -78,6 +76,9 @@ class Teacher(User):
     @staticmethod
     def verify_password(password, hashed_password):
         return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
+
+    def __repr__(self):
+        return f"{self.first_name},{self.last_name}"
 
 def save_to_files(teachers, filename="teachers.txt"):
     try:

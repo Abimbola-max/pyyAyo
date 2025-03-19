@@ -48,3 +48,6 @@ class User(ABC):
     @abstractmethod
     def login(self, email, password):
         pass
+
+    def __repr__(self):
+        return f'{self.first_name}, {self.last_name}'
