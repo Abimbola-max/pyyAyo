@@ -1,2 +1,3 @@
 bus301,business edu
 sci321,science222
+math301,mathematics

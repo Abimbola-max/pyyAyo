@@ -36,22 +36,18 @@ class Student(User):
         self.is_logged_in = False
         return None
 
-    def enroll_in_course(self, course_code):
-        courses = read_from_file_C("courses.txt")
-        # enroll = load_enrollment("enroll.txt")
-
+    def enroll_in_a_course(self, course_code):
+        courses = read_from_files('courses.txt')
+        if courses is None:
+            raise NotFoundException("No courses data available.")
         if course_code in self.enrolled_courses:
             raise CourseAlreadyRegisteredException(f"Course code '{course_code}' is already registered.")
 
-        enrolled = False
-        for course in courses:
-            if course.course_code == course_code:
-                self.enrolled_courses.append(course_code)
-                enrolled = True
-                print(f"{Student.first_name} has successfully enrolled in course '{course_code}'.")
-
-        if not enrolled:
-            raise InvalidCourseCodeException(f"Course code '{course_code}' not found.")
+        self.enrolled_courses.append(course_code)
+        new_enrollment = Enrollment(self, course_code)
+        courses.append(new_enrollment)
+        save_enrollment(courses, "enrollment.txt")
+        return course_code
 
     def view_enrolled_courses(self):
         if self.enrolled_courses:
@@ -59,6 +55,9 @@ class Student(User):
             for course in self.enrolled_courses:
                 print(f"{course}")
         raise NotFoundException("You never enroll my guy.")
+
+
+
 
     @staticmethod
     def view_courses():
@@ -80,7 +79,7 @@ class Student(User):
     def verify_password(password, hashed_password):
         return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
 
-    def __repr__(self):
+    def __str__(self):
         return f"{self.first_name},{self.last_name}"
 
 def save_to_files(students, filename="students.txt"):

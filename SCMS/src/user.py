@@ -49,5 +49,5 @@ class User(ABC):
     def login(self, email, password):
         pass
 
-    def __repr__(self):
+    def __str__(self):
         return f'{self.first_name}, {self.last_name}'

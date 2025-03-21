@@ -1,3 +1,4 @@
 abimbola,aishat,abisoye@gmail.com,$2b$12$6etAFhdBiUDkhOX8rbEAJu9WWig8VK3zMpzkyw9NKvcWXIBqMQqD.
 abims,dddd,debby@gmail.com,$2b$12$HTbBQhvTagGDnmRDWPyWduAGQT0UCgRaOxTgwcMSrLc9szHDtvQNe
 adetayo,afeez,afeez@gmail.com,$2b$12$Wm3lO29pUes0bRLAakdDFeX5FlLBxPeeAjuHpGBtgaO7KKAFPDQni
+Favour,Dimah,favy@gmail.com,$2b$12$EnAGcWn1Si/xEuK1jLTnyuSJ4ttLN4aSFY1H5Mx834Il53U0hOSiS

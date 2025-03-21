@@ -20,12 +20,11 @@ class Enrollment:
     def course(self, course):
         self.__course = course
 
-
 def save_enrollment(enrollments, filename="enrollment.txt"):
     try:
         with open(filename, "w") as file:
             for enrollment in enrollments:
-                file.write(f"{enrollment.student},{enrollment.course}\n")
+                file.write(f"{enrollment.student.last_name},{enrollment.course_code}\n")
     except FileNotFoundError:
         print("Enrollment file not found.")
 
@@ -40,6 +39,7 @@ def load_enrollment(filename="enrollment.txt"):
     except FileNotFoundError:
         print("Enrollment file not found.")
     return enrollments
+
 
 
 

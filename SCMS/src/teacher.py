@@ -20,10 +20,6 @@ class Teacher(User):
         return self.is_logged_in
 
     def register(self, first_name, last_name, email, password):
-        validator = Validator()
-        validator.validate_first_name(first_name)
-        validator.validate_last_name(last_name)
-        validator.validate_email(email)
         hashed_password = self.encrypt_password(self.password)
 
         if os.path.exists(STUDENT_FILENAME):

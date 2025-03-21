@@ -13,7 +13,7 @@ class Validator:
        if not first_name.strip():
            raise InvalidNameLengthException("No spaces allowed amongst the letters.")
        if len(first_name) < 3 or not first_name.isalpha():
-           raise InvalidNameLengthException("Last Name must be at least 3 characters long and contain only letters.")
+           raise InvalidNameLengthException("First Name must be at least 3 characters long and contain only letters.")
        return True
 
    @staticmethod
@@ -22,7 +22,7 @@ class Validator:
            raise NullException("Last Name field is required")
        if not last_name.strip():
            raise InvalidNameLengthException("No spaces allowed amongst the letters.")
-       if len(last_name) < 3 or not last_name.isalpha():
+       if len(last_name) < 3:
            raise InvalidNameLengthException("Last Name must be at least 3 characters long and contain only letters.")
        return True
 
